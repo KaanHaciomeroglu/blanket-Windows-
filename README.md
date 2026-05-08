@@ -36,7 +36,7 @@ Improve focus and increase your productivity by listening to different sounds. B
 | Ubuntu (PPA) | [`Stable Releases`](https://launchpad.net/~apandada1/+archive/ubuntu/blanket), [`Daily Builds`](https://launchpad.net/~apandada1/+archive/ubuntu/blanket-daily) | [Archisman Panigrahi](https://github.com/apandada1) |
 | MX Linux | [`blanket`](http://mxrepo.com/mx/repo/pool/main/b/blanket/) | [SwampRabbit](https://github.com/SwampRabbit) |
 
-### Build from source
+### Build from source (Linux)
 
 You can clone and run from GNOME Builder.
 
@@ -55,6 +55,67 @@ Alternatively, use the following commands to build it with meson.
 meson builddir --prefix=/usr/local
 sudo ninja -C builddir install
 ```
+
+### Windows — Otomatik Kurulum (Önerilen)
+
+Tek komutla her şeyi kurar: MSYS2 (yoksa), bağımlılıklar, UI derleme ve başlatıcı oluşturma.
+
+```powershell
+powershell -ExecutionPolicy Bypass -File install.ps1
+```
+
+Kurulum sonunda `Blanket.bat` oluşur — çift tıklayarak uygulamayı başlatabilirsiniz.
+
+---
+
+### Build from source (Windows — Manuel)
+
+Blanket runs on Windows via [MSYS2](https://www.msys2.org/). The Linux-only features (MPRIS media keys, D-Bus, PulseAudio) are automatically disabled; all sounds and UI work normally.
+
+#### 1. Install MSYS2
+
+Download and install MSYS2 from https://www.msys2.org/. The default install path (`C:\msys64`) is assumed; if you install elsewhere, add the `mingw64\bin` directory to your PATH.
+
+#### 2. Install dependencies
+
+Open the **MSYS2 MinGW64** shell and run:
+
+```bash
+pacman -S mingw-w64-x86_64-gtk4 \
+           mingw-w64-x86_64-libadwaita \
+           mingw-w64-x86_64-gstreamer \
+           mingw-w64-x86_64-gst-plugins-base \
+           mingw-w64-x86_64-gst-plugins-good \
+           mingw-w64-x86_64-python-gobject \
+           mingw-w64-x86_64-blueprint-compiler
+```
+
+#### 3. Clone the repository
+
+```powershell
+git clone https://github.com/rafaelmardojai/blanket.git
+cd blanket
+```
+
+#### 4. Build resources
+
+Run once to compile UI templates, icons, sounds, and GSettings schema:
+
+```powershell
+python setup_windows.py
+```
+
+This generates a `build/` directory containing `blanket.gresource` and `gschemas.compiled`.
+
+#### 5. Run
+
+```powershell
+python run_windows.py
+```
+
+`run_windows.py` automatically detects and uses MSYS2's Python (which has PyGObject), so you can run it from any shell — no need to open the MSYS2 shell each time.
+
+> **Note:** Re-run `setup_windows.py` only when UI files or sounds change. Normal Python edits do not require a rebuild.
 
 ## Translations
 Blanket is translated into several languages. If your language is missing or incomplete, please help to [translate Blanket in Weblate](https://hosted.weblate.org/engage/blanket/).

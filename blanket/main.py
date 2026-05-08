@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import sys
+import platform
 from gettext import gettext as _
 
 import gi
@@ -37,19 +38,25 @@ class Application(Adw.Application):
             flags=Gio.ApplicationFlags.HANDLES_COMMAND_LINE,
         )
         GLib.set_application_name(_("Blanket"))
-        GLib.setenv(
-            "PULSE_PROP_application.icon_name",
-            "com.rafaelmardojai.Blanket-symbolic",
-            True,
-        )
+        if platform.system() != "Windows":
+            GLib.setenv(
+                "PULSE_PROP_application.icon_name",
+                "com.rafaelmardojai.Blanket-symbolic",
+                True,
+            )
         # Connect app shutdown signal
         self.connect("shutdown", self._on_shutdown)
 
-        # Track power status
-        self.power_monitor = Gio.PowerProfileMonitor.dup_default()
-        self.power_monitor.connect(
-            "notify::power-saver-enabled", self._on_notify_power_saver_enabled
-        )
+        # Track power status (Linux/macOS only)
+        self.power_monitor = None
+        if platform.system() != "Windows":
+            try:
+                self.power_monitor = Gio.PowerProfileMonitor.dup_default()
+                self.power_monitor.connect(
+                    "notify::power-saver-enabled", self._on_notify_power_saver_enabled
+                )
+            except Exception:
+                pass
 
         # Add --hidden command line option
         self.add_main_option(
@@ -79,8 +86,13 @@ class Application(Adw.Application):
         ):
             style_manager.props.color_scheme = Adw.ColorScheme.FORCE_DARK
 
-        # Start MPRIS server
-        self.mpris = MPRIS(self)
+        # Start MPRIS server (Linux/macOS only — requires D-Bus session bus)
+        self.mpris = None
+        if platform.system() != "Windows":
+            try:
+                self.mpris = MPRIS(self)
+            except Exception as e:
+                print(f"MPRIS unavailable: {e}")
 
         self.setup_actions()
 
@@ -266,7 +278,7 @@ class Application(Adw.Application):
         self.quit()
 
     def _on_notify_power_saver_enabled(self, obj, pspec):
-        if self.power_monitor.get_power_saver_enabled() and MainPlayer.get().playing:
+        if self.power_monitor and self.power_monitor.get_power_saver_enabled() and MainPlayer.get().playing:
             # Pause playback if the system enters power saver mode, as audio
             # playback uses quite a lot of power. Don’t re-enable it when
             # exiting power saver mode, as that would be jarring for the user.

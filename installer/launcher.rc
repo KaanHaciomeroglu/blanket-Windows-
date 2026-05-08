@@ -1,0 +1,37 @@
+// Resource file for Blanket.exe
+// Embeds the application icon
+
+#include <windows.h>
+
+// Application icon (ID 1 = default app icon Windows looks for)
+1 ICON "..\build\blanket.ico"
+
+// Version info
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION     0,8,0,0
+PRODUCTVERSION  0,8,0,0
+FILEFLAGSMASK   VS_FFI_FILEFLAGSMASK
+FILEFLAGS       0
+FILEOS          VOS_NT_WINDOWS32
+FILETYPE        VFT_APP
+FILESUBTYPE     VFT2_UNKNOWN
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904B0"
+        BEGIN
+            VALUE "CompanyName",      "Rafael Mardojai CM"
+            VALUE "FileDescription",  "Blanket - Listen to different sounds"
+            VALUE "FileVersion",      "0.8.0"
+            VALUE "InternalName",     "Blanket"
+            VALUE "LegalCopyright",   "GPL-3.0-or-later"
+            VALUE "OriginalFilename", "Blanket.exe"
+            VALUE "ProductName",      "Blanket"
+            VALUE "ProductVersion",   "0.8.0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x0409, 1200
+    END
+END
