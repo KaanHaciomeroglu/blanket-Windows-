@@ -27,7 +27,7 @@ SolidCompression=yes
 WizardStyle=modern
 PrivilegesRequired=admin
 PrivilegesRequiredOverridesAllowed=dialog
-UninstallDisplayIcon={app}\{#AppExeName}
+UninstallDisplayIcon={app}\build\blanket.ico
 UninstallDisplayName={#AppName}
 VersionInfoVersion={#AppVersion}
 VersionInfoDescription=Blanket Installer
@@ -53,13 +53,13 @@ Source: "{#SourceRoot}\build\com.rafaelmardojai.Blanket.gschema.xml"; DestDir: "
 ; Launcher executable (with icon)
 Source: "{#SourceRoot}\installer\Blanket.exe"; DestDir: "{app}"; Flags: ignoreversion
 
-; App icon
-Source: "{#SourceRoot}\build\blanket.ico"; DestDir: "{app}"; Flags: ignoreversion
+; App icon — build\ altına kurulur, window.py orada arar
+Source: "{#SourceRoot}\build\blanket.ico"; DestDir: "{app}\build"; Flags: ignoreversion
 
 [Icons]
-Name: "{group}\{#AppName}";              Filename: "{app}\{#AppExeName}"; IconFilename: "{app}\blanket.ico"
+Name: "{group}\{#AppName}";              Filename: "{app}\{#AppExeName}"; IconFilename: "{app}\build\blanket.ico"
 Name: "{group}\{cm:UninstallProgram,{#AppName}}"; Filename: "{uninstallexe}"
-Name: "{autodesktop}\{#AppName}";        Filename: "{app}\{#AppExeName}"; IconFilename: "{app}\blanket.ico"; Tasks: desktopicon
+Name: "{autodesktop}\{#AppName}";        Filename: "{app}\{#AppExeName}"; IconFilename: "{app}\build\blanket.ico"; Tasks: desktopicon
 
 [Run]
 Filename: "{app}\{#AppExeName}"; Description: "{cm:LaunchProgram,{#AppName}}"; Flags: nowait postinstall skipifsilent
