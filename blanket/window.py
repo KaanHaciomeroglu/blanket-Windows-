@@ -34,17 +34,12 @@ class BlanketWindow(Adw.ApplicationWindow):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        # Set default window icon
         if platform.system() == "Windows":
-            # On Windows, load the .ico from the build dir next to run_windows.py
-            try:
-                from gi.repository import GdkPixbuf
-                ico = os.path.join(os.path.dirname(os.path.dirname(__file__)), "build", "blanket.ico")
-                if os.path.exists(ico):
-                    pixbuf = GdkPixbuf.Pixbuf.new_from_file(ico)
-                    Gtk.Window.set_default_icon(pixbuf)
-            except Exception:
-                pass
+            # GTK4 has no set_default_icon(); use Win32 API after window is realized
+            self._ico_path = os.path.join(
+                os.path.dirname(os.path.dirname(__file__)), "build", "blanket.ico"
+            )
+            self.connect("realize", self._on_realize_set_win32_icon)
         else:
             self.set_default_icon_name("com.rafaelmardojai.Blanket")
 
@@ -308,3 +303,35 @@ class BlanketWindow(Adw.ApplicationWindow):
 
     def hide_power_toast(self):
         self.power_toast.dismiss()
+
+    def _on_realize_set_win32_icon(self, _widget):
+        """Set titlebar and taskbar icon via Win32 API (GTK4 has no set_default_icon)."""
+        try:
+            import ctypes
+            from gi.repository import GdkWin32
+
+            surface = self.get_surface()
+            hwnd = GdkWin32.Win32Surface.get_handle(surface)
+
+            LR_LOADFROMFILE = 0x0010
+            IMAGE_ICON      = 1
+            WM_SETICON      = 0x0080
+            ICON_SMALL      = 0
+            ICON_BIG        = 1
+
+            user32   = ctypes.windll.user32
+            ico_path = self._ico_path
+
+            hicon_big = user32.LoadImageW(
+                None, ico_path, IMAGE_ICON, 256, 256, LR_LOADFROMFILE
+            )
+            hicon_small = user32.LoadImageW(
+                None, ico_path, IMAGE_ICON, 16, 16, LR_LOADFROMFILE
+            )
+
+            if hicon_big:
+                user32.SendMessageW(hwnd, WM_SETICON, ICON_BIG, hicon_big)
+            if hicon_small:
+                user32.SendMessageW(hwnd, WM_SETICON, ICON_SMALL, hicon_small)
+        except Exception:
+            pass
