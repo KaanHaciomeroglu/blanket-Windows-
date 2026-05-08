@@ -24,6 +24,12 @@ Improve focus and increase your productivity by listening to different sounds. B
 
 <a href="https://flathub.org/apps/details/com.rafaelmardojai.Blanket"><img width="200" alt="Download on Flathub" src="https://flathub.org/api/badge?svg&locale=en"/></a>
 
+### Windows
+
+<a href="https://github.com/KaanHaciomeroglu/blanket-Windows-/releases/latest"><img width="200" alt="Download for Windows" src="https://img.shields.io/badge/Windows-Installer-0078D4?style=for-the-badge&logo=windows&logoColor=white"/></a>
+
+Download the latest `Blanket-x.y.z-setup.exe` from the [releases page](https://github.com/KaanHaciomeroglu/blanket-Windows-/releases/latest) and run it. The installer sets up all required dependencies automatically.
+
 ### Third Party Packages 
 
 | Distribution | Package | Maintainer |
@@ -35,6 +41,7 @@ Improve focus and increase your productivity by listening to different sounds. B
 | openSUSE  | [`blanket`](https://build.opensuse.org/package/show/multimedia%3Aapps/blanket) | [Michael Vetter](https://github.com/jubalh) |
 | Ubuntu (PPA) | [`Stable Releases`](https://launchpad.net/~apandada1/+archive/ubuntu/blanket), [`Daily Builds`](https://launchpad.net/~apandada1/+archive/ubuntu/blanket-daily) | [Archisman Panigrahi](https://github.com/apandada1) |
 | MX Linux | [`blanket`](http://mxrepo.com/mx/repo/pool/main/b/blanket/) | [SwampRabbit](https://github.com/SwampRabbit) |
+| Windows | [`Blanket-Windows`](https://github.com/KaanHaciomeroglu/blanket-Windows-/releases/latest) | [Kaan Haciomeroglu](https://github.com/KaanHaciomeroglu) |
 
 ### Build from source (Linux)
 
