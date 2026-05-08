@@ -84,6 +84,15 @@ if not os.path.exists(SCHEMA_COMPILED):
 os.environ["GSETTINGS_SCHEMA_DIR"] = BUILD_DIR
 sys.path.insert(0, BASE_DIR)
 
+# Tell Windows to use Blanket's icon (not Python's) in the taskbar
+try:
+    import ctypes
+    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(
+        "com.rafaelmardojai.Blanket"
+    )
+except Exception:
+    pass
+
 gi.require_version("Adw", "1")
 gi.require_version("Gdk", "4.0")
 gi.require_version("Gst", "1.0")

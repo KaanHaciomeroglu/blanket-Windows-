@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import os
+import platform
 from gettext import gettext as _
 from urllib.parse import unquote, urlparse
 
@@ -33,8 +34,19 @@ class BlanketWindow(Adw.ApplicationWindow):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        # Set default window icon for window managers
-        self.set_default_icon_name("com.rafaelmardojai.Blanket")
+        # Set default window icon
+        if platform.system() == "Windows":
+            # On Windows, load the .ico from the build dir next to run_windows.py
+            try:
+                from gi.repository import GdkPixbuf
+                ico = os.path.join(os.path.dirname(os.path.dirname(__file__)), "build", "blanket.ico")
+                if os.path.exists(ico):
+                    pixbuf = GdkPixbuf.Pixbuf.new_from_file(ico)
+                    Gtk.Window.set_default_icon(pixbuf)
+            except Exception:
+                pass
+        else:
+            self.set_default_icon_name("com.rafaelmardojai.Blanket")
 
         self.setup_actions()
         # Setup widgets
