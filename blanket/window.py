@@ -35,11 +35,12 @@ class BlanketWindow(Adw.ApplicationWindow):
         super().__init__(**kwargs)
 
         if platform.system() == "Windows":
-            # GTK4 has no set_default_icon(); use Win32 API after window is realized
+            # GTK4 has no set_default_icon(); use Win32 API after window is shown
             self._ico_path = os.path.join(
                 os.path.dirname(os.path.dirname(__file__)), "build", "blanket.ico"
             )
             self.connect("realize", self._on_realize_set_win32_icon)
+            self.connect("map", self._on_realize_set_win32_icon)
         else:
             self.set_default_icon_name("com.rafaelmardojai.Blanket")
 
@@ -344,14 +345,14 @@ class BlanketWindow(Adw.ApplicationWindow):
         except Exception:
             pass
 
-        # Fallback: enumerate visible top-level windows on the current thread
+        # Fallback: enumerate all top-level windows owned by this process
         try:
             import ctypes
             import ctypes.wintypes
+            import os as _os
 
             user32  = ctypes.windll.user32
-            kernel32 = ctypes.windll.kernel32
-            tid     = kernel32.GetCurrentThreadId()
+            pid     = _os.getpid()
             result  = [0]
 
             WNDENUMPROC = ctypes.WINFUNCTYPE(
@@ -362,12 +363,14 @@ class BlanketWindow(Adw.ApplicationWindow):
 
             @WNDENUMPROC
             def _cb(hwnd, _lparam):
-                if user32.IsWindowVisible(hwnd):
+                lpdw_pid = ctypes.wintypes.DWORD()
+                user32.GetWindowThreadProcessId(hwnd, ctypes.byref(lpdw_pid))
+                if lpdw_pid.value == pid and user32.IsWindowVisible(hwnd):
                     result[0] = hwnd
                     return False
                 return True
 
-            user32.EnumThreadWindows(tid, _cb, 0)
+            user32.EnumWindows(_cb, 0)
             return result[0]
         except Exception:
             return 0

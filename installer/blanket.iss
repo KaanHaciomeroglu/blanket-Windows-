@@ -57,9 +57,9 @@ Source: "{#SourceRoot}\installer\Blanket.exe"; DestDir: "{app}"; Flags: ignoreve
 Source: "{#SourceRoot}\build\blanket.ico"; DestDir: "{app}\build"; Flags: ignoreversion
 
 [Icons]
-Name: "{group}\{#AppName}";              Filename: "{app}\{#AppExeName}"; IconFilename: "{app}\build\blanket.ico"
+Name: "{group}\{#AppName}";              Filename: "{app}\{#AppExeName}"; IconFilename: "{app}\build\blanket.ico"; AppUserModelID: "com.rafaelmardojai.Blanket"
 Name: "{group}\{cm:UninstallProgram,{#AppName}}"; Filename: "{uninstallexe}"
-Name: "{autodesktop}\{#AppName}";        Filename: "{app}\{#AppExeName}"; IconFilename: "{app}\build\blanket.ico"; Tasks: desktopicon
+Name: "{autodesktop}\{#AppName}";        Filename: "{app}\{#AppExeName}"; IconFilename: "{app}\build\blanket.ico"; Tasks: desktopicon; AppUserModelID: "com.rafaelmardojai.Blanket"
 
 [Run]
 Filename: "{app}\{#AppExeName}"; Description: "{cm:LaunchProgram,{#AppName}}"; Flags: nowait postinstall skipifsilent
