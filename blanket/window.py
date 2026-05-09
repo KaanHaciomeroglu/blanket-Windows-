@@ -306,32 +306,68 @@ class BlanketWindow(Adw.ApplicationWindow):
 
     def _on_realize_set_win32_icon(self, _widget):
         """Set titlebar and taskbar icon via Win32 API (GTK4 has no set_default_icon)."""
+        import ctypes
+        import ctypes.wintypes
+
+        hwnd = self._get_win32_hwnd()
+        if not hwnd:
+            return
+
+        LR_LOADFROMFILE = 0x0010
+        LR_DEFAULTSIZE  = 0x0040
+        IMAGE_ICON      = 1
+        WM_SETICON      = 0x0080
+        ICON_SMALL      = 0
+        ICON_BIG        = 1
+
+        user32   = ctypes.windll.user32
+        ico_path = self._ico_path
+
+        # 0,0 + LR_DEFAULTSIZE lets Windows pick the right size from the .ico
+        hicon_big = user32.LoadImageW(
+            None, ico_path, IMAGE_ICON, 0, 0, LR_LOADFROMFILE | LR_DEFAULTSIZE
+        )
+        hicon_small = user32.LoadImageW(
+            None, ico_path, IMAGE_ICON, 16, 16, LR_LOADFROMFILE
+        )
+
+        if hicon_big:
+            user32.SendMessageW(hwnd, WM_SETICON, ICON_BIG, hicon_big)
+        if hicon_small:
+            user32.SendMessageW(hwnd, WM_SETICON, ICON_SMALL, hicon_small)
+
+    def _get_win32_hwnd(self):
+        """Return the HWND for this window; tries GdkWin32 then thread enumeration."""
         try:
-            import ctypes
             from gi.repository import GdkWin32
-
-            surface = self.get_surface()
-            hwnd = GdkWin32.Win32Surface.get_handle(surface)
-
-            LR_LOADFROMFILE = 0x0010
-            IMAGE_ICON      = 1
-            WM_SETICON      = 0x0080
-            ICON_SMALL      = 0
-            ICON_BIG        = 1
-
-            user32   = ctypes.windll.user32
-            ico_path = self._ico_path
-
-            hicon_big = user32.LoadImageW(
-                None, ico_path, IMAGE_ICON, 256, 256, LR_LOADFROMFILE
-            )
-            hicon_small = user32.LoadImageW(
-                None, ico_path, IMAGE_ICON, 16, 16, LR_LOADFROMFILE
-            )
-
-            if hicon_big:
-                user32.SendMessageW(hwnd, WM_SETICON, ICON_BIG, hicon_big)
-            if hicon_small:
-                user32.SendMessageW(hwnd, WM_SETICON, ICON_SMALL, hicon_small)
+            return GdkWin32.Win32Surface.get_handle(self.get_surface())
         except Exception:
             pass
+
+        # Fallback: enumerate visible top-level windows on the current thread
+        try:
+            import ctypes
+            import ctypes.wintypes
+
+            user32  = ctypes.windll.user32
+            kernel32 = ctypes.windll.kernel32
+            tid     = kernel32.GetCurrentThreadId()
+            result  = [0]
+
+            WNDENUMPROC = ctypes.WINFUNCTYPE(
+                ctypes.c_bool,
+                ctypes.wintypes.HWND,
+                ctypes.wintypes.LPARAM,
+            )
+
+            @WNDENUMPROC
+            def _cb(hwnd, _lparam):
+                if user32.IsWindowVisible(hwnd):
+                    result[0] = hwnd
+                    return False
+                return True
+
+            user32.EnumThreadWindows(tid, _cb, 0)
+            return result[0]
+        except Exception:
+            return 0

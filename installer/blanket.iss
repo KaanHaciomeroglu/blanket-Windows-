@@ -2,7 +2,7 @@
 ; Compiled with Inno Setup 6.x
 
 #define AppName      "Blanket"
-#define AppVersion   "0.8.0"
+#define AppVersion   "0.8.1"
 #define AppPublisher "Rafael Mardojai CM"
 #define AppURL       "https://github.com/rafaelmardojai/blanket"
 #define AppExeName   "Blanket.exe"
@@ -29,7 +29,7 @@ PrivilegesRequired=admin
 PrivilegesRequiredOverridesAllowed=dialog
 UninstallDisplayIcon={app}\build\blanket.ico
 UninstallDisplayName={#AppName}
-VersionInfoVersion={#AppVersion}
+VersionInfoVersion=0.8.1.0
 VersionInfoDescription=Blanket Installer
 
 [Languages]

@@ -108,4 +108,4 @@ Gio.resources_register(resource)
 
 from blanket.main import main  # noqa: E402
 
-sys.exit(main("0.8.0"))
+sys.exit(main("0.8.1"))
